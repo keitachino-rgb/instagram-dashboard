@@ -4,6 +4,16 @@ Vercelにデプロイ可能な、Next.js + TypeScript + Tailwind CSSで構築さ
 
 ## 特徴
 
+### 投稿管理・生成機能 ✨
+- **テキストテンプレート** - 6カテゴリ×30以上のテンプレート（新作発表、キャンペーン、ユーザー紹介など）
+- **Unsplash画像検索** - 完全無料の高品質画像検索機能
+- **ハッシュタグエディター** - 提案機能付きのハッシュタグ管理
+- **スケジュール機能** - 投稿を予約またはすぐに投稿
+- **Instagram風プレビュー** - 実際の投稿イメージを確認
+- **ローカルストレージ管理** - 下書き・予約・投稿済みの投稿を保存
+- **エンゲージメント予測** - テキスト長とハッシュタグ数から予測表示
+- **レスポンシブUI** - モバイル対応のモダンなデザイン
+
 ### 分析機能
 - **フォロワー数推移**: 期間内のフォロワー増減を可視化
 - **エンゲージメント分析**: いいね、コメント、保存数の詳細分析
@@ -92,6 +102,21 @@ npm start
 npm run type-check
 ```
 
+### 投稿管理機能の設定（オプション）
+
+投稿画像検索の機能を最大限活用するため、Unsplash APIキーを設定できます：
+
+1. https://unsplash.com/oauth/applications にアクセス
+2. 「New Application」をクリックして新規作成
+3. アクセスキーをコピー
+4. `.env.local` に追加：
+
+```bash
+NEXT_PUBLIC_UNSPLASH_API_KEY=your_access_key_here
+```
+
+詳細は [POST_GENERATOR_SETUP.md](./POST_GENERATOR_SETUP.md) を参照してください。
+
 ## ファイル構成
 
 ```
@@ -101,18 +126,28 @@ instagram-dashboard-vercel/
 │   ├── page.tsx             # メインページ
 │   └── globals.css          # グローバルスタイル
 ├── components/
-│   ├── Dashboard.tsx        # メインダッシュボード
-│   ├── KPICard.tsx          # KPIカードコンポーネント
-│   ├── ChartComponent.tsx   # グラフコンポーネント
-│   ├── PostPerformanceTable.tsx # 投稿パフォーマンステーブル
-│   ├── HashtagAnalysis.tsx  # ハッシュタグ分析
-│   ├── DateRangeSelector.tsx # 期間選択コンポーネント
-│   ├── ExportButton.tsx     # エクスポートボタン
-│   └── DarkModeToggle.tsx   # ダークモードトグル
+│   ├── Dashboard.tsx              # メインダッシュボード
+│   ├── KPICard.tsx                # KPIカードコンポーネント
+│   ├── ChartComponent.tsx         # グラフコンポーネント
+│   ├── PostPerformanceTable.tsx   # 投稿パフォーマンステーブル
+│   ├── HashtagAnalysis.tsx        # ハッシュタグ分析
+│   ├── DateRangeSelector.tsx      # 期間選択コンポーネント
+│   ├── ExportButton.tsx           # エクスポートボタン
+│   ├── DarkModeToggle.tsx         # ダークモードトグル
+│   ├── PostGenerator.tsx          # 投稿生成メインコンポーネント
+│   ├── TextTemplateSelector.tsx   # テキストテンプレート選択
+│   ├── ImageSearcher.tsx          # Unsplash画像検索
+│   ├── HashtagEditor.tsx          # ハッシュタグエディター
+│   ├── ScheduleSelector.tsx       # スケジュール選択
+│   ├── PostPreview.tsx            # Instagram風プレビュー
+│   └── SavedPostsList.tsx         # 保存済み投稿一覧
 ├── lib/
 │   ├── utils.ts             # ユーティリティ関数
 │   ├── analytics.ts         # 分析データジェネレーター
-│   └── store.ts             # Zustand状態管理
+│   ├── store.ts             # Zustand状態管理（ダッシュボード）
+│   ├── postStore.ts         # Zustand状態管理（投稿）
+│   ├── templates.ts         # テキストテンプレート定義
+│   └── unsplash.ts          # Unsplash API連携
 ├── public/
 │   └── (静的ファイル)
 ├── package.json
@@ -136,7 +171,18 @@ instagram-dashboard-vercel/
 - 時間帯別・曜日別分析
 - 投稿パフォーマンステーブル
 - ハッシュタグ分析
+- 投稿管理・生成セクション
 - 期間サマリー
+
+### PostGenerator.tsx
+投稿の管理・生成を行うメインコンポーネント：
+- テキストテンプレート選択
+- 画像検索・選択
+- ハッシュタグエディター
+- スケジュール設定
+- Instagram風プレビュー
+- 保存済み投稿の一覧表示・編集・削除
+- ローカルストレージ管理
 
 ### KPICard.tsx
 各指標を表示するカードコンポーネント。以下の機能を提供：
@@ -174,6 +220,47 @@ instagram-dashboard-vercel/
 - PNG画像出力
 - PDFレポート生成
 - JSONデータエクスポート
+
+### TextTemplateSelector.tsx
+テキストテンプレートの選択と生成：
+- 6カテゴリの分類（新作発表、キャンペーン、ユーザー紹介、シーズン、日常、感謝）
+- 各カテゴリ複数のテンプレート（合計30+）
+- ランダム選択機能
+- テンプレートのカスタマイズ対応
+
+### ImageSearcher.tsx
+Unsplash APIを使用した画像検索：
+- キーワード検索
+- グリッド表示による複数画像確認
+- 画像の詳細情報（著者など）
+- APIキーなしでもダミー画像で動作
+
+### HashtagEditor.tsx
+ハッシュタグの管理機能：
+- 手動入力
+- 提案ハッシュタグからの選択
+- 追加・削除機能
+- Instagramの推奨数表示
+
+### ScheduleSelector.tsx
+投稿スケジュール設定：
+- 日付・時刻選択
+- 即時投稿か予約投稿か選択
+- フューチャーデート検証
+
+### PostPreview.tsx
+Instagram風のプレビュー表示：
+- 実際の投稿イメージ
+- テキスト + 画像表示
+- ハッシュタグ表示
+- エンゲージメント予測
+
+### SavedPostsList.tsx
+保存済み投稿の管理：
+- 一覧表示（サムネイル付き）
+- 投稿ステータス表示（下書き、予約、投稿済み）
+- 編集・削除機能
+- スケジュール日時表示
 
 ## サンプルデータについて
 
