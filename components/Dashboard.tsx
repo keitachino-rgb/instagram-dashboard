@@ -33,6 +33,7 @@ import { DateRangeSelector } from './DateRangeSelector';
 import { ExportButton } from './ExportButton';
 import { PostPerformanceTable } from './PostPerformanceTable';
 import { HashtagAnalysis } from './HashtagAnalysis';
+import { PostGenerator } from './PostGenerator';
 
 export function Dashboard() {
   const dashboardRef = useRef<HTMLDivElement>(null);
@@ -332,6 +333,16 @@ export function Dashboard() {
 
         <section className="grid grid-cols-1 gap-6">
           <HashtagAnalysis hashtags={hashtagData} />
+        </section>
+
+        {/* Post Generator */}
+        <section>
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+            投稿管理・生成
+          </h2>
+          <div className="bg-white dark:bg-dark-card rounded-2xl shadow-lg border border-gray-200 dark:border-dark-border p-6">
+            <PostGenerator />
+          </div>
         </section>
 
         {/* Summary Stats */}
