@@ -3,11 +3,5 @@
   "devCommand": "next dev",
   "installCommand": "npm ci",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "env": {
-    "NEXT_PUBLIC_SITE_URL": {
-      "description": "Site URL",
-      "default": "http://localhost:3000"
-    }
-  }
+  "outputDirectory": ".next"
 }
